@@ -1,0 +1,7 @@
+{
+    "restrictRedirect": true,
+    "autoLogout": false,
+    "autoLogoutTime": 60,
+    "killTabs": false,
+    "allowContext": true
+}

@@ -1,0 +1,10 @@
+{
+    "json.schemas": [
+     {
+         "fileMatch": [
+             "/ext-settings.json"
+         ],
+         "url": "./ext-settings.schema.json"
+     }
+    ]
+}

@@ -1,0 +1,29 @@
+.top-black-menu{
+    display: none;
+}
+
+footer{
+    display: none;
+}
+
+.btn.btn-mosru{
+    display: none;
+}
+
+.es-rightmenu li{
+    font-size: large;
+}
+
+
+div.es-rightmenu > ul  > li > a[href^="http"]{
+    display: none;
+}
+
+a[href^="/upload"],a[href^="http"],a[href^="mailto"],a[href~="@"]{
+    pointer-events: none;
+    color: black;
+}
+
+form[name="form_auth"],form#update_photo{
+    display: none;
+}

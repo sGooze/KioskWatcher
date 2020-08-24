@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://abitlist.rea.ru/ext-settings.schema.json",
+    "title": "Схема параметров дополнения",
+    "description": "Схема параметров дополнения, доступных для изменения пользователем на странице настройки",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "title": "Параметр",
+        "description": "Настраиваемый пользователем параметр",
+        "properties": {
+            "id":{
+                "type": "string",
+                "title": "Идентификатор",
+                "description": "Уникальный идентификатор параметра, используемый в коде для получения его значения",
+                "pattern": "^[a-zA-Z]{1}\\w*$"
+            },
+            "title":{
+                "type": "string",
+                "title": "Описание",
+                "description": "Краткое описание параметра, отображаемое на странице настроек"
+            },
+            "subtitle":{
+                "type": "string",
+                "title": "Комментарий",
+                "description": "Дополнительная информация, поясняющая назначение параметра"
+            },
+            "type":{
+                "type": "string",
+                "title": "Тип данных",
+                "description": "Тип данных параметра. Определяет, какой контрол будет использоваться для его изменения",
+                "enum": ["boolean", "number", "string", "url"]
+            },
+            "defaultValue":{
+                "type":["boolean", "number", "string"],
+                "title": "Значение по умолчанию",
+                "description": "Значение параметра по умолчанию"
+            }
+        },
+        "required": [
+            "id",
+            "title",
+            "type",
+            "defaultValue"
+        ],
+        "additionalProperties": false
+    },
+    "uniqueItems": true
+}

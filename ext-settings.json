@@ -1,0 +1,55 @@
+[
+    {
+        "id": "kioskHome",
+        "type": "url",
+        "title": "Домашняя страница для режима киоска",
+        "defaultValue": "https://abitlist.rea.ru?kiosk=true"
+    },
+    {
+        "id": "restrictRedirect",
+        "type": "boolean",
+        "title": "Включить перенаправление страниц",
+        "subtitle": "Перенаправляет все запросы, ведущие за пределы домена домашней страницы, на главную странцу киоска",
+        "defaultValue": true
+    },
+    {
+        "id": "autoLogout",
+        "type": "boolean",
+        "title": "Автоматический выход из ЛКС",
+        "subtitle": "НЕ ИСПОЛЬЗУЕТСЯ НЕ ИСПОЛЬЗУЕТСЯ НЕ ИСПОЛЬЗУЕТСЯ НЕ ИСПОЛЬЗУЕТСЯ",
+        "defaultValue": false
+    },
+    {
+        "id": "autoLogoutTime",
+        "type": "number",
+        "title": "Тайм-аут автоматического выхода из ЛКС, сек.",
+        "defaultValue": 60
+    },
+    {
+        "id": "killTabs",
+        "type": "boolean",
+        "title": "Закрывать все новые вкладки и окна",
+        "subtitle": "Не распространяется на about:newtab и приватные вкладки",
+        "defaultValue": true
+    },
+    {
+        "id": "allowContext",
+        "type": "boolean",
+        "title": "Разрешить открытие контекстного меню",
+        "subtitle": "Контекстное меню всегда можно открыть с помощью Shift+ПКМ или Shift+≣Menu",
+        "defaultValue": false
+    },
+    {
+        "id": "fullscreenOnStartup",
+        "type": "boolean",
+        "title": "Переключить браузер в режим \"На весь экран\" сразу после запуска",
+        "defaultValue": true
+    },
+    {
+        "id": "kioskAlwaysInFocus",
+        "type": "boolean",
+        "title": "Всегда держать окно киоска в фокусе",
+        "subtitle": "При переключении фокуса на другое окно фокус будет автоматически возвращён обратно",
+        "defaultValue": true
+    }
+]
