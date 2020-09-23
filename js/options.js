@@ -1,4 +1,6 @@
 async function getFromStorage(name){
+    if (name === undefined)
+        return undefined;
     let stored = await browser.storage.local.get(name);
     return (stored) ? Reflect.get(stored, name) : undefined;
 }
@@ -61,16 +63,29 @@ document.addEventListener('DOMContentLoaded', async (e) => {
     settings = await readSettings();
     document.getElementById('extVersion').innerText = `Версия ${browser.runtime.getManifest().version}`;
     // Инициализация инпутов для каждого параметра
-    settings.forEach(async (el) =>{
+    let makeControl = async function (el){
+        // Добавление подзаголовка
+        if(el.type == "hr"){
+            let div = document.createElement('div');
+            div.appendChild(document.createElement("hr"));
+            if (el.title){
+                let title = document.createElement("h2");
+                title.innerText = el.title;
+                title.classList.add("settings-subheader");
+                div.appendChild(title);
+            }
+            return div;
+        }
+
+        let val = await getFromStorage(el.id);
+        if (val === undefined)
+            val = el.defaultValue;
+
         let label = document.createElement('label');
         let input = document.createElement('input');
         label.for = el.id;
         input.id = el.id;
         label.appendChild(input);
-
-        let val = await getFromStorage(el.id);
-        if (val === undefined)
-            val = el.defaultValue;
 
         switch(el.type){
             case "boolean":
@@ -105,8 +120,14 @@ document.addEventListener('DOMContentLoaded', async (e) => {
             sub.innerText = el.subtitle;
             label.appendChild(sub);
         }
-        document.getElementById('options').appendChild(label);
-    });
+        return label;
+    };
+    // Необходимо, чтобы получать элементы в порядке их следования в файле настроек
+    const inputPromises = [];
+    settings.forEach((s) => inputPromises.push( makeControl(s) ));
+    await Promise.all(inputPromises).then(inputs => inputs.forEach( 
+        i => document.getElementById('options').appendChild(i) 
+    ));
 
     document.getElementById('settingsPlaceholder').remove();
     // Загрузка настроек по умолчанию
