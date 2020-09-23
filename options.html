@@ -9,6 +9,7 @@
   <body>
     <div id="fullscreen-info">
       <h1>Настройки киоска</h1>
+      <small id="extVersion"></small>
       <div>
         Убедитесь в корректности настроек ниже. При необходимости внесите изменения и
         нажмите на кнопку "Сохранить". Некоторые изменения вступят в силу только после перезапуска браузера.
@@ -18,29 +19,11 @@
       </div>
     </div>
     <hr/>
-    <!--<label for="restrictRedirect">
-        <input type="checkbox" id="restrictRedirect">
-        Включить перенаправление страниц
-    </label>
-    <label for="autoLogout">
-      <input type="checkbox" id="autoLogout">
-      Автоматический выход из ЛКС через
-    </label>
-    <label for="autoLogoutTime">
-      <input type="number" id="autoLogoutTime" value="60">
-      секунд
-    </label>
-    <label for="killTabs">
-      <input type="checkbox" id="killTabs">
-      Закрывать все новые вкладки и окна &Tab;
-      <small>Не распространяется на about:newtab и приватные вкладки</small>
-    </label>
-    <label for="allowContext">
-      <input type="checkbox" id="allowContext">
-      Разрешить открытие контекстного меню
-      <small>Контекстное меню всегда можно открыть с помощью Shift+ПКМ или Shift+≣Menu</small>
-    </label>-->
-    <div id="options"><!-- Сюда будут подгружены виджеты настроек --></div>
+    
+    <div id="options">
+      <!-- Сюда будут подгружены виджеты настроек -->
+      <span id="settingsPlaceholder">Подождите, идёт загрузка...</span>
+    </div>
     <button type="button" id='savebtn'>Сохранить</button>
     <button type="button" id='defaultsbtn'>Сбросить</button>
     <script src="js/options.js"></script>

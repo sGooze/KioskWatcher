@@ -59,6 +59,7 @@ async function loadDefaultSettings(){
 // Загрузка содержимого страницы
 document.addEventListener('DOMContentLoaded', async (e) => {
     settings = await readSettings();
+    document.getElementById('extVersion').innerText = `Версия ${browser.runtime.getManifest().version}`;
     // Инициализация инпутов для каждого параметра
     settings.forEach(async (el) =>{
         let label = document.createElement('label');
@@ -107,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async (e) => {
         document.getElementById('options').appendChild(label);
     });
 
+    document.getElementById('settingsPlaceholder').remove();
     // Загрузка настроек по умолчанию
     /*let _first = await getFromStorage(initLabel);
     if (!_first)

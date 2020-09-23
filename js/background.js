@@ -2,6 +2,10 @@ async function getFromStorage(name){
     let stored = await browser.storage.local.get(name);
     return (stored) ? Reflect.get(stored, name) : undefined;
 }
+function saveToStorage(name, value){
+    let set = {}; Reflect.set(set, name, value);
+    browser.storage.local.set(set);
+}
 
 var kioskWindowId = null;
 
@@ -43,24 +47,24 @@ async function destroyKioskWindow(){
     browser.windows.remove(temp);
 }
 
-browser.windows.onCreated.addListener(async (win) => {
-    console.log("Новое окно: " + win.id);
-    let tab = (await browser.windows.get(win.id, {populate: true})).tabs[0];
-    console.log(`Новое окно ID:${win.id} tab[0].url:${tab.url}`);
-    /*let killTabs = await getFromStorage('killTabs');
-    // Закрытие окон, ведущих за пределы разрешённого домена
-    if (!killTabs || tab.incognito)
-        return;
-    if (await getFromStorage("restrictRedirect")){
-        let home = await getFromStorage("kioskHome");
-        let homeUrl = new URL(home);
+// browser.windows.onCreated.addListener(async (win) => {
+//     console.log("Новое окно: " + win.id);
+//     let tab = (await browser.windows.get(win.id, {populate: true})).tabs[0];
+//     console.log(`Новое окно ID:${win.id} tab[0].url:${tab.url}`);
+//     let killTabs = await getFromStorage('killTabs');
+//     // // Закрытие окон, ведущих за пределы разрешённого домена
+//     // if (!killTabs || tab.incognito)
+//     //     return;
+//     // if (await getFromStorage("restrictRedirect")){
+//     //     let home = await getFromStorage("kioskHome");
+//     //     let homeUrl = new URL(home);
 
-        if (!(tab.url.includes(homeUrl.hostname))){
-            console.warn(`Создано некорректное окно с url = ${tab.url}`)
-            await browser.windows.remove(win.id);
-        }
-    }*/
-});
+//     //     if (!(tab.url.includes(homeUrl.hostname))){
+//     //         console.warn(`Создано некорректное окно с url = ${tab.url}`)
+//     //         await browser.windows.remove(win.id);
+//     //     }
+//     // }
+// });
 
 browser.windows.onRemoved.addListener((windowId) => {
     if (windowId == kioskWindowId)
@@ -87,7 +91,7 @@ getFromStorage("fullscreenOnStartup").then(async (val) =>{
 
 // Управление зумом
 var zoom = 1.0;
-const zoomMax = 2.0;
+const zoomMax = 1.8;
 const zoomMin = 1.0;
 
 browser.runtime.onMessage.addListener(
@@ -108,23 +112,29 @@ browser.runtime.onInstalled.addListener(
         // Выполняется только если доплнение загружено как временное (через about:debugging)
         if (e.temporary)
             console.log("Ни что в мире не постоянно.. .. .. ..... - Чехов");
-        // Открыть страницу настроек
-        browser.tabs.create({
-            active: true,
-            url: "/options.html"
-        });
         // -- скопировано из options.js --
         function saveToStorage(name, value){
             let set = {}; Reflect.set(set, name, value);
             browser.storage.local.set(set);
         }
         // -- скопировано из options.js::loadDefaultSettings --
-        let settings = (await fetch('/ext-settings.json')).json();
-        settings.forEach(async (el) =>{
-            console.log(`[${el.type}]${el.id} = ${el.defaultValue}`);
-            saveToStorage(el.id, el.defaultValue);
-            console.log('Загружены настройки по умолчанию');
-        });
+        let settings = await (await fetch('/ext-settings.json')).json();
+        let reset = (await getFromStorage("noResetAfterUpdate"));
+        if (!reset){
+            // Сброс к значениям по умолчанию - при первой установке и если не стоит ключ noResetAfterUpdate
+            settings.forEach(async (el) =>{
+                console.log(`[${el.type}]${el.id} = ${el.defaultValue}`);
+                saveToStorage(el.id, el.defaultValue);
+                console.log('Загружены настройки по умолчанию');
+            });
+        }
+        // Открыть страницу настроек
+        if (await getFromStorage("setupAfterUpdate") == true){
+            browser.tabs.create({
+                active: true,
+                url: "/options.html"
+            });
+        }
         // Изменить доступные настройки браузера
         try {
             await browser.browserSettings.webNotificationsDisabled.set({value: false});
@@ -164,4 +174,30 @@ browser.menus.onClicked.addListener((info) => {
         case "kioskCloseKiosk": destroyKioskWindow(); break;
         case "kioskSettings": destroyKioskWindow(); browser.runtime.openOptionsPage(); break;
     }
-})
+});
+
+// Синхронизация настроек с файлом на сервере
+async function syncSettingsWithServer(){
+    let remote = await (await fetch(await getFromStorage('syncSettingsUrl'))).json();
+    
+    for(rs in remote){
+        // Защита от инъекции неизвестных настроек
+        let prev = await getFromStorage(rs);
+        if (prev != undefined && prev != remote[rs]){
+            saveToStorage(rs, remote[rs]);
+            console.log(`updated from server: ${rs} = ${remote[rs]}`);
+        }
+    }
+
+}
+
+
+// Синхронизация 
+getFromStorage('syncSettings').then(
+    async function (sync){
+        if (!sync) return;
+        let synctime = await getFromStorage('syncSettingsInterval') * 1000;
+        syncSettingsWithServer();
+        setInterval(syncSettingsWithServer, synctime);
+    }
+);

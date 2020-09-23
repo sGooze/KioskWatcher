@@ -14,7 +14,7 @@
  .kb-style{ width: 960px; margin: auto; pointer-events: auto; } 
  .memeClass{ background-color: slategrey !important; color: white; max-width: 90px; }
  .pressedShift{ background-color: #666666 !important; color: white; }
- .pressed{ background-color: #666666 !important; color: white; }
+ .btnpress{ background-color: #666666 !important; color: white; }
  /*.hg-button:hover{ background-color: blue !important; color: white; }*/
  
  .simple-keyboard.hg-theme-default .hg-button{height: 60px; font-size: medium}
