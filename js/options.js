@@ -165,12 +165,16 @@ document.getElementById('savebtn').addEventListener('click', (e) => {
     }
 
     settings.forEach(async (el) =>{
+        if (el.id === undefined){
+            return;
+        }
         let input = document.getElementById(el.id);
+        input.classList.remove("saved-success");
         if (!input){
             console.error(`Элемент с id "${el.id} не найден на странице!"`);
             return;
         }
-        else 
+        else{ 
             switch(el.type){
                 case "boolean":
                     saveToStorage(el.id, input.checked);
@@ -181,6 +185,8 @@ document.getElementById('savebtn').addEventListener('click', (e) => {
                     saveToStorage(el.id, input.value);
                     break;
             }
+        }
+        input.classList.add("saved-success");
     });
     let tempText = e.target.innerText;
     e.target.innerText = 'Сохранено!';

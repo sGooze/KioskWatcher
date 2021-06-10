@@ -125,8 +125,8 @@ browser.runtime.onInstalled.addListener(
             settings.forEach(async (el) =>{
                 console.log(`[${el.type}]${el.id} = ${el.defaultValue}`);
                 saveToStorage(el.id, el.defaultValue);
-                console.log('Загружены настройки по умолчанию');
             });
+            console.log('Загружены настройки по умолчанию');
         }
         // Открыть страницу настроек
         if (await getFromStorage("setupAfterUpdate") == true){
@@ -201,3 +201,64 @@ getFromStorage('syncSettings').then(
         setInterval(syncSettingsWithServer, synctime);
     }
 );
+
+
+
+// Телеметрия
+async function sendTelemetry(serverUrl, customMessage){
+    if (!serverUrl){
+        return false;
+    }
+    // Не засоряем сервер сообщениями о переходе на главную
+    if (customMessage === undefined && location.pathname == "/"){
+        return true;
+    }
+    var message = (customMessage !== undefined) ? customMessage : location.href;
+    var response = await fetch(serverUrl, { 
+        body: JSON.stringify({ requestPath: message }),
+        headers: {     "Content-Type": "application/json"   },
+        method: "POST"
+    });
+    if (!response.ok){
+        console.error(response.status);
+    }
+    return response.ok;
+}
+
+getFromStorage('telemetryOn').then(async(s) => {
+    if (s === undefined) s = true; // мне так жаль
+    if (!s) return;
+    let serverUrl = await getFromStorage('telemetryServerURL');
+    // Проверка сервера
+    var result = await sendTelemetry(serverUrl, "Init OK");
+    if (!result){
+        console.warn("Не удалось установить связь с сервером телеметрии. Отправка сообщений отключена.");
+        return;
+    }
+    // HistoryStateUpdated - при внутрисайтовых обновлениях локации через History API
+    browser.webNavigation.onHistoryStateUpdated.addListener(async dtl => {
+        let meme = await sendTelemetry(serverUrl, decodeURI( dtl.url ));
+        if (meme)
+            console.log(`onHistoryStateUpdated Sent message: ${dtl.url}`);
+    })
+
+    var homeURL = new URL( await getFromStorage("kioskHome") );
+    // BeforeNavigate - при навигации с одной страницы на другую
+    browser.webNavigation.onBeforeNavigate.addListener(async dtl => {
+        let naviURL = new URL(dtl.url);
+        if (naviURL.protocol == "about:" || naviURL.protocol == "moz-extension:"){
+            return;
+        }
+        // Переходы в корень домашней страницы игнорируются
+        if (naviURL.origin == homeURL.origin && naviURL.pathname == "/"){
+            return;
+        }
+        let meme = await sendTelemetry(serverUrl, decodeURI( dtl.url ));
+        if (meme)
+            console.log(`onBeforeNavigate Sent message: ${dtl.url}`);
+    })
+});
+
+browser.runtime.onStartup.addListener(function(){
+    console.log("hello from onStartup");
+});

@@ -37,3 +37,11 @@ button{
 small{
     display: block;
 }
+
+.saved-success::after{
+    content: "✔";
+}
+
+.saved-error::after{
+    content: "❌";
+}

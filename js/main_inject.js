@@ -58,15 +58,15 @@ function addStyle(aCss) {
     var cont = document.body.appendChild(document.createElement('div'));
     cont.className = "extContainer";
 
-    cont.appendChild(makeButton('<i class="material-icons">arrow_back</i>', (e)=>{
+    cont.appendChild(makeButton('<i class="custom-material-icons">arrow_back</i>', (e)=>{
         if (!location.origin.match('intkiosk.rea.ru'))
             history.back();
     }));
-    cont.appendChild(makeButton('<i class="material-icons">autorenew</i>', (e)=>location.reload()));
-    cont.appendChild(makeButton('<i class="material-icons">home</i>', 
+    cont.appendChild(makeButton('<i class="custom-material-icons">autorenew</i>', (e)=>location.reload()));
+    cont.appendChild(makeButton('<i class="custom-material-icons">home</i>', 
         async (e)=>{ location.href = await getFromStorage("kioskHome") }));
-    cont.appendChild(makeButton('<i class="material-icons">zoom_in</i>', (e)=>{  browser.runtime.sendMessage({zoom:  0.2}); }));
-    cont.appendChild(makeButton('<i class="material-icons">zoom_out</i>', (e)=>{ browser.runtime.sendMessage({zoom: -0.2}); })); 
+    cont.appendChild(makeButton('<i class="custom-material-icons">zoom_in</i>', (e)=>{  browser.runtime.sendMessage({zoom:  0.2}); }));
+    cont.appendChild(makeButton('<i class="custom-material-icons">zoom_out</i>', (e)=>{ browser.runtime.sendMessage({zoom: -0.2}); })); 
 }
 
 
@@ -77,3 +77,27 @@ function addStyle(aCss) {
     loadButtons();
  })();
  
+
+
+// Автоматическое обновление страницы
+getFromStorage('autoRedirectToMain').then(async(s) => {
+    if (!s) return;
+    let timeout = await getFromStorage("autoRedirectTimeout") * 1000;
+    let home = await getFromStorage("kioskHome");
+
+    timeleft = timeout;
+    const updfreq = 500;
+    setInterval(() => {
+        timeleft -= updfreq;
+        if (timeleft <= 0){
+            if (window.location.href != home)
+                window.location.href = home;
+            else
+                timeleft = timeout;
+        }
+    }, updfreq);
+    document.body.addEventListener('click',   () => timeleft = timeout);
+    document.body.addEventListener('touchend', () => timeleft = timeout);
+    document.body.addEventListener('pointerup', () => timeleft = timeout);
+})
+

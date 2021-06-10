@@ -57,9 +57,21 @@ let hideKeyboard = () => {
     document.querySelector('.kb-well').style.display = 'none';
     kbTimeout.cancel();
 };
-let showKeyboard = () => {
-    document.querySelector('.kb-well').style.display = 'block';
+let showKeyboard = (target) => {
+    let well = document.querySelector('.kb-well');
+    well.style.display = 'block';
     kbTimeout.start(() => hideKeyboard());
+    // Пытаемся разместить клавиатуру чуть ниже выбранного контрола
+    // Если она при этом съезжает за экран, то просто помещаем её с отступом от нижнего края
+    if (target){
+        let rects = target.getClientRects()[0];
+        let top = rects.y + rects.height + 75;
+        well.style.top = top + "px";
+        if (well.getClientRects()[0].y + top < window.innerHeight){
+            return;
+        }
+    }
+    well.style.top = "";
 }
 
 let Keyboard = SimpleKeyboard.default;
@@ -72,6 +84,7 @@ let myKeyboard = new Keyboard({
     tabCharOnTab: false,
     newLineOnEnter: true,
     preventMouseDownDefault: true,
+    stopMouseDownPropagation: true,
     useButtonTag: true,
     //autoUseTouchEvents: true,
     layout: {
@@ -91,29 +104,29 @@ let myKeyboard = new Keyboard({
         ],
         'default': [
             "\u0451 1 2 3 4 5 6 7 8 9 0 - = {bksp}",
-            "{tab} \u0439 \u0446 \u0443 \u043a \u0435 \u043d \u0433 \u0448 \u0449 \u0437 \u0445 \u044a \\",
+            "{tab} \u0439 \u0446 \u0443 \u043a \u0435 \u043d \u0433 \u0448 \u0449 \u0437 \u0445 \u044a \/",
             "{lang} \u0444 \u044b \u0432 \u0430 \u043f \u0440 \u043e \u043b \u0434 \u0436 \u044d {enter}",
-            "{shift} \u044f \u0447 \u0441 \u043c \u0438 \u0442 \u044c \u0431 \u044e \/ {caps}",
+            "{shift} \u044f \u0447 \u0441 \u043c \u0438 \u0442 \u044c \u0431 \u044e . {caps}",
             "@ {space} {hide}"
         ],
         'shift': [
             '\u0401 ! " \u2116 ; % : ? * ( ) _ + {bksp}',
-            "{tab} \u0419 \u0426 \u0423 \u041a \u0415 \u041d \u0413 \u0428 \u0429 \u0417 \u0425 \u042a \/",
+            "{tab} \u0419 \u0426 \u0423 \u041a \u0415 \u041d \u0413 \u0428 \u0429 \u0417 \u0425 \u042a \\",
             "{lang} \u0424 \u042b \u0412 \u0410 \u041f \u0420 \u041e \u041b \u0414 \u0416 \u042d {enter}",
-            "{shift2} \u042f \u0427 \u0421 \u041c \u0418 \u0422 \u042c \u0411 \u042e \/ {caps}",
+            "{shift2} \u042f \u0427 \u0421 \u041c \u0418 \u0422 \u042c \u0411 \u042e , {caps}",
             "@ {space} {hide}"
         ]
     },
     mergeDisplay: true,
     display: {
         '{lang}': '\u042F\u0437\u044B\u043A',
-        '{hide}': '<i class="material-icons">keyboard_hide</i>',
+        '{hide}': '<i class="custom-material-icons">keyboard_hide</i>',
         '{tab}': 'Tab',
-        '{shift}': '<i class="material-icons">keyboard_capslock</i> Shift',
-        '{shift2}': '<i class="material-icons">keyboard_capslock</i> Shift',
+        '{shift}': '<i class="custom-material-icons">keyboard_capslock</i> Shift',
+        '{shift2}': '<i class="custom-material-icons">keyboard_capslock</i> Shift',
         '{caps}': 'CAPS LOCK',
-        '{bksp}': '<i class="material-icons">backspace</i>',
-        '{enter}': '<i class="material-icons">keyboard_return</i>'
+        '{bksp}': '<i class="custom-material-icons">backspace</i>',
+        '{enter}': '<i class="custom-material-icons">keyboard_return</i>'
     },
     buttonTheme: [
         {
@@ -138,7 +151,7 @@ let onfocus = (event) => {
         inputName: event.target.id
     });
     myKeyboard.setInput(event.target.value, event.target.id);
-    showKeyboard();
+    showKeyboard(event.target);
 };
 Array.from(document.getElementsByTagName('input')).forEach(input => input.addEventListener('focus', onfocus));
 Array.from(document.getElementsByTagName('textarea')).forEach(input => input.addEventListener('focus', onfocus));
