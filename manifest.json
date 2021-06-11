@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "REA Terminal Client",
-  "version": "1.5.3.2",
+  "version": "1.6a",
 
   "description": "Обеспечивает функционал для работы терминала/киоска.",
 
@@ -77,12 +77,16 @@
   ],
 
   "background":{
-    "scripts": ["js/background.js"]
+    "scripts": ["js/background.js", "js/background-blocker.js"]
   },
 
   "options_ui": {
     "page": "options.html",
     "browser_style": true
-  }
+  },
+
+  "web_accessible_resources": [
+      "kiosk-home.html"
+  ]
 
 }

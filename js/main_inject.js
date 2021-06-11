@@ -5,21 +5,26 @@ async function getFromStorage(name){
     return (stored) ? Reflect.get(stored, name) : undefined;
 }
 
-browser.storage.local.get('restrictRedirect').then(async (set) => {
-    if (!set.restrictRedirect) return;
-    /*if (!(window.location.href.includes("student.rea") || !window.location.href.includes("abitlist.rea") 
-        || window.location.href.includes("intkiosk.rea"))){*/
-    let home = await getFromStorage("kioskHome");
-    let homeUrl = new URL(home);
+// browser.storage.local.get('restrictRedirect').then(async (set) => {
+//     if (!set.restrictRedirect) return;
+//     /*if (!(window.location.href.includes("student.rea") || !window.location.href.includes("abitlist.rea") 
+//         || window.location.href.includes("intkiosk.rea"))){*/
+//     let home = await getFromStorage("kioskHome");
+//     let homeUrl = new URL(home);
 
-    if (!(window.location.href.includes(homeUrl.hostname))){
-        //location.href = "https://intkiosk.rea.ru/logged_home.aspx";
-        location.href = home;
-    }
-    else if (window.location.href.includes('https://student.rea.ru/index.php')){
-        location.href = home;
-    }
-})
+//     if (!(window.location.href.includes(homeUrl.hostname))){
+//         //location.href = "https://intkiosk.rea.ru/logged_home.aspx";
+//         location.href = home;
+//     }
+//     else if (window.location.href.includes('https://student.rea.ru/index.php')){
+//         location.href = home;
+//     }
+// })
+async function getHomeUrl(){
+    return (await getFromStorage("useInternalHomePage"))
+    ? browser.runtime.getURL("kiosk-home.html")
+    : await getFromStorage("kioskHome");
+}
 
 // Context menu
 getFromStorage('allowContext').then((set) => {
@@ -64,7 +69,7 @@ function addStyle(aCss) {
     }));
     cont.appendChild(makeButton('<i class="custom-material-icons">autorenew</i>', (e)=>location.reload()));
     cont.appendChild(makeButton('<i class="custom-material-icons">home</i>', 
-        async (e)=>{ location.href = await getFromStorage("kioskHome") }));
+        async (e)=>{ location.href = await getHomeUrl() }));
     cont.appendChild(makeButton('<i class="custom-material-icons">zoom_in</i>', (e)=>{  browser.runtime.sendMessage({zoom:  0.2}); }));
     cont.appendChild(makeButton('<i class="custom-material-icons">zoom_out</i>', (e)=>{ browser.runtime.sendMessage({zoom: -0.2}); })); 
 }
@@ -83,7 +88,7 @@ function addStyle(aCss) {
 getFromStorage('autoRedirectToMain').then(async(s) => {
     if (!s) return;
     let timeout = await getFromStorage("autoRedirectTimeout") * 1000;
-    let home = await getFromStorage("kioskHome");
+    let home = await getHomeUrl();
 
     timeleft = timeout;
     const updfreq = 500;

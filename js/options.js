@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async (e) => {
 });
 
 // Кнопка СОХРАНИТЬ
-document.getElementById('savebtn').addEventListener('click', (e) => {
+document.getElementById('savebtn').addEventListener('click', async (e) => {
     e.preventDefault();
     /*document.querySelectorAll('input').forEach((x) =>{
         if (!x.id) return;
@@ -164,30 +164,40 @@ document.getElementById('savebtn').addEventListener('click', (e) => {
         readSettings().then(() => alert('Объект настроек загружен'));
     }
 
-    settings.forEach(async (el) =>{
-        if (el.id === undefined){
-            return;
-        }
-        let input = document.getElementById(el.id);
-        input.classList.remove("saved-success");
-        if (!input){
-            console.error(`Элемент с id "${el.id} не найден на странице!"`);
-            return;
-        }
-        else{ 
-            switch(el.type){
-                case "boolean":
-                    saveToStorage(el.id, input.checked);
-                    break;
-                case "number":
-                case "string":
-                case "url":
-                    saveToStorage(el.id, input.value);
-                    break;
+    for(var el of settings){
+        try{
+            if (el.id === undefined){
+                continue;
             }
+            let input = document.getElementById(el.id);
+            input.classList.remove("saved-success");
+            if (!input){
+                console.error(`Элемент с id "${el.id} не найден на странице!"`);
+                continue;
+            }
+            else{ 
+                switch(el.type){
+                    case "boolean":
+                        saveToStorage(el.id, input.checked);
+                        break;
+                    case "number":
+                    case "string":
+                    case "url":
+                        saveToStorage(el.id, input.value);
+                        break;
+                }
+            }
+            input.classList.add("saved-success");
         }
-        input.classList.add("saved-success");
-    });
+        catch(err){
+            console.error(err);
+        }
+    };
+
+    // Отправка сообщений об обновлении настроек другим компонентам
+    browser.runtime.sendMessage({type:  "updateblocker"});
+
+
     let tempText = e.target.innerText;
     e.target.innerText = 'Сохранено!';
     setTimeout(() => {e.target.innerText = tempText}, 3 * 1000);

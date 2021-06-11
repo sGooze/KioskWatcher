@@ -8,7 +8,13 @@
             "reAttach": true,
             "addonPath": "${workspaceFolder}",
             "url": "https://intkiosk.rea.ru/go.aspx",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}",
+            "pathMappings": [
+                {
+                    "url": "moz-extension://fb0d7bc1-6d8c-42b3-9c8b-54650f925976",
+                    "path": "${workspaceFolder}"
+                }
+            ]
         }
     ]
 }

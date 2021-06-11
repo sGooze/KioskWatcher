@@ -1,10 +1,28 @@
 [
+    {
+        "id": "setupAfterUpdate",
+        "type":"boolean",
+        "title": "Открывать окно настроек после обновления",
+        "subtitle": "Потенциальный риск безопасности при включении на рабочих машинах (хулиган подойдёт и настройки перекрутит)",
+        "defaultValue": true
+    },
 
+    {
+        "type": "hr",
+        "title": "Перенаправление"
+    },
     {
         "id": "kioskHome",
         "type": "url",
         "title": "Домашняя страница для режима киоска",
         "defaultValue": "https://rasp.rea.ru?kiosk=true"
+    },
+    {
+        "id": "useInternalHomePage",
+        "type":"boolean",
+        "defaultValue": false,
+        "title": "Использовать встроенную домашнюю страницу",
+        "subtitle": "Если Да, то будет использоваться встроенная домашняя страница плагина, если Нет - то домашняя страница из поля выше"
     },
     {
         "id": "restrictRedirect",
@@ -26,11 +44,17 @@
         "defaultValue": 60
     },
     {
-        "id": "setupAfterUpdate",
-        "type":"boolean",
-        "title": "Открывать окно настроек после обновления",
-        "subtitle": "Потенциальный риск безопасности при включении на рабочих машинах (хулиган подойдёт и настройки перекрутит)",
-        "defaultValue": true
+        "id": "redirectFilter",
+        "type": "string",
+        "title": "Фильтр перенаправления",
+        "subtitle": "Определяет маски адресов, с которых клиент не будет автоматически перенаправлен на домашнюю страницу",
+        "defaultValue": "^.*\\.rea\\.ru"
+    },
+    {
+        "id": "otherHomeParams",
+        "type": "string",
+        "title": "Прочие параметры домашней страницы",
+        "defaultValue": ""
     },
 
     {
