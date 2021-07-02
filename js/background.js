@@ -179,16 +179,27 @@ browser.menus.onClicked.addListener((info) => {
 // Синхронизация настроек с файлом на сервере
 async function syncSettingsWithServer(){
     let remote = await (await fetch(await getFromStorage('syncSettingsUrl'))).json();
+    let myName = await getFromStorage('kioskId');
     
-    for(rs in remote){
+    async function parseSettings(settingsobj){
         // Защита от инъекции неизвестных настроек
-        let prev = await getFromStorage(rs);
-        if (prev != undefined && prev != remote[rs]){
-            saveToStorage(rs, remote[rs]);
-            console.log(`updated from server: ${rs} = ${remote[rs]}`);
+        for(rs in settingsobj){
+            // В файле удалённых настроек идут как общие, так и индивидуальные ключи
+            if (rs == 'individual'){
+                var meme = settingsobj[rs][myName];
+                if (meme){
+                    await parseSettings(meme);
+                }
+            } else{
+                let prev = await getFromStorage(rs);
+                if (rs != 'kioskId' && prev != undefined && prev != settingsobj[rs]){
+                    saveToStorage(rs, settingsobj[rs]);
+                    console.log(`updated from server: ${rs} = ${settingsobj[rs]}`);
+                }
+            }
         }
     }
-
+    await parseSettings(remote);
 }
 
 
@@ -197,7 +208,7 @@ getFromStorage('syncSettings').then(
     async function (sync){
         if (!sync) return;
         let synctime = await getFromStorage('syncSettingsInterval') * 1000;
-        syncSettingsWithServer();
+        await syncSettingsWithServer();
         setInterval(syncSettingsWithServer, synctime);
     }
 );
@@ -209,13 +220,14 @@ async function sendTelemetry(serverUrl, customMessage){
     if (!serverUrl){
         return false;
     }
+    let myName = await getFromStorage('kioskId');
     // Не засоряем сервер сообщениями о переходе на главную
     if (customMessage === undefined && location.pathname == "/"){
         return true;
     }
     var message = (customMessage !== undefined) ? customMessage : location.href;
     var response = await fetch(serverUrl, { 
-        body: JSON.stringify({ requestPath: message }),
+        body: JSON.stringify({ requestPath: message, kioskId: myName }),
         headers: {     "Content-Type": "application/json"   },
         method: "POST"
     });

@@ -67,6 +67,10 @@ button.extButton{
   border: 2px solid white;
 }
 
+button.extButton:first-of-type {
+  margin-top: 80px
+}
+
 button.extButton::-moz-focus-inner{
   border: 0;
 }

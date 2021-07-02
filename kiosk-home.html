@@ -4,14 +4,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/pdfjs-2.8.335.min.js"></script>
+    <link rel="stylesheet" href="css/kiosk-home.css">
     <title>Домашняя страница</title>
 </head>
 <body>
-    :)
-    <div>
-        <a href="https://www.rea.ru/">РЭУ имени Плеханова</a> |
-        <a href="https://rasp.rea.ru/">Расписание занятий</a> |
-        <a href="https://www.ya.ru/">Сюда нельзя</a>
+    <div class="kiosk-home-header">
+        <h1>
+            Российский экономический<br>
+            УНИВЕРСИТЕТ<br>
+            имени Г.В. Плеханова
+        </h1>
+        <h2 id="fac-title"></h2>
+        <div class="kiosk-home-links">
+            <a href="https://www.rea.ru/">РЭУ имени Плеханова</a>
+            <a href="https://rasp.rea.ru/">Расписание занятий</a>
+            <a href="https://www.ya.ru/">Сюда нельзя</a>
+        </div>
     </div>
+    
+    <div style="text-align: center;">
+        <!--<button id="prev">Previous</button>
+        <button id="next">Next</button>
+        &nbsp; &nbsp;
+        <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>-->
+        <canvas id="the-canvas"></canvas>
+    </div>
+    
+    <script src="js/kiosk-home.js"></script>
 </body>
 </html>

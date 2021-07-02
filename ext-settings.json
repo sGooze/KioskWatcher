@@ -1,5 +1,12 @@
 [
     {
+        "id": "kioskId",
+        "type": "string",
+        "title": "Идентификатор киоска",
+        "subtitle": "Используется для удалённого управления и телеметрии",
+        "defaultValue": ""
+    },
+    {
         "id": "setupAfterUpdate",
         "type":"boolean",
         "title": "Открывать окно настроек после обновления",

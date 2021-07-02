@@ -48,8 +48,6 @@ async function updateParams(){
 }
 
 function setupBlocker(e){
-
-    console.log("setup blocker");
     // Определение типа события
     if (!e.type || e.type != "updateblocker"){
         return;

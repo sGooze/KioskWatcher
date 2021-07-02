@@ -21,9 +21,10 @@ async function getFromStorage(name){
 //     }
 // })
 async function getHomeUrl(){
+    let param = await getFromStorage("otherHomeParams");
     return (await getFromStorage("useInternalHomePage"))
-    ? browser.runtime.getURL("kiosk-home.html")
-    : await getFromStorage("kioskHome");
+    ? (browser.runtime.getURL("kiosk-home.html") + (param) ? `?${param}` : "")
+    : (await getFromStorage("kioskHome") + (param) ? `?${param}` : "");
 }
 
 // Context menu
@@ -93,10 +94,11 @@ getFromStorage('autoRedirectToMain').then(async(s) => {
     timeleft = timeout;
     const updfreq = 500;
     setInterval(() => {
+        var hrefClean = window.location.href.split('#')[0].split('?')[0];
         timeleft -= updfreq;
         if (timeleft <= 0){
-            if (window.location.href != home)
-                window.location.href = home;
+            if (hrefClean != home)
+                hrefClean = home;
             else
                 timeleft = timeout;
         }
